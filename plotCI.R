@@ -15,7 +15,7 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoLim=T,stack=F,
   if (F) {
     # EXAMPLES
     # vector: 
-    data=sample.int(100);upperCI=sample.int(100)/10;lowerCI=sample.int(100)/10
+    data=as.numeric(sample.int(100));upperCI=as.numeric(sample.int(100)/10);lowerCI=as.numeric(sample.int(100)/10)
     plotCI(data,upperCI=,lowerCI,sort=T)
     # list: 
     data=lapply(seq(1:3),function(i){sample.int(100)})
