@@ -1,29 +1,39 @@
-plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoLim=T,stack=F,...) {
-  # Function plots data with confidence bounds using polygons
+plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,stack=F,...) {
+  ####################################################################################
+  # Author: Aaron Brooks
+  # Affiliation: Institute for Systems Biology, Seattle, WA
+  # Date of creation: 11/10/2011
+  # Last update: 11/10/2011
+  ####################################################################################
+  # DESCRIPTION
+  ####################################################################################
+  # This function plots data with confidence bounds using polygons
   # Useful for visualizing trends in groups of data without the
   # noise of many lines
-  # data is a vector or list of data to be plotted
-  # upperCI is a vector or list of distances to be plotted 
+  # DATA is a vector or list of data to be plotted
+  # UPPERCI is a vector or list of distances to be plotted 
   # upward from data
-  # same goes for lowerCI, but this is plotted on bottom
-  # lengths of data, upperCI, lowerCI should correspond
-  # cols allows for custom colors
-  # sort controls sorting of data
-  # autoLim will automatically set limits if TRUE
-  # stack will plot side-by-side rather than on top 
+  # same goes for LOWERCI, but this is plotted on bottom
+  # lengths of DATA, UPPERCI, LOWERCI should correspond
+  # COLS allows for custom colors
+  # SORT controls sorting of data
+  # AUTOLIM will automatically set limits if TRUE
+  # STACK will plot list results side-by-side rather than on top 
+  # of one another
+  ####################################################################################
   require(RColorBrewer)
   if (F) {
     # EXAMPLES
     # vector: 
     data=as.numeric(sample.int(100));upperCI=as.numeric(sample.int(100)/10);lowerCI=as.numeric(sample.int(100)/10)
-    plotCI(data,upperCI=,lowerCI,sort=T)
+    plotCI(data,upperCI,lowerCI,sort=T,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input")
     # list: 
     data=lapply(seq(1:3),function(i){sample.int(100)})
     upperCI=lapply(seq(1:3),function(i){sample.int(100)/10})
     lowerCI=lapply(seq(1:3),function(i){sample.int(100)/10})
-    plotCI(data,upperCI,lowerCI,sort=T)
+    plotCI(data,upperCI,lowerCI,sort=T,xlab="Sorted Index",ylab="Value of Random Number",main="List Input")
     # list stacked:
-    plotCI(data,upperCI,lowerCI,sort=T,stack=T)
+    plotCI(data,upperCI,lowerCI,sort=T,stack=T,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input, Stacked")
   }
   cols <- c(brewer.pal(9,"Set3"),brewer.pal(8,"Set3"),brewer.pal(12,"Set3"))
   try(dev.off(),silent=T)
@@ -40,6 +50,10 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoLim=T,stack=F,
     if (stack) {
       par(mfrow=c(1,length(data)),mar=c(5,2,5,2))
     }
+    if (autoX) {
+      xlimits <- sapply(data,length)
+      xlimits <- c(1,max(xlimits))
+    }
     for (i in 1:length(data)) {
       if (i == 1) {
         if (sort) {
@@ -50,8 +64,12 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoLim=T,stack=F,
           }
         }
         # Plot lines
-        if (autoLim) {
+        if (autoX && autoY) {
+          plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),xlim=xlimits,...)
+        } else if (autoY) {
           plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
+        } else if (autoX) {
+          plot(data[[i]],col=cols[i],type="l",xlim=xlimits,...)
         } else {
           plot(data[[i]],col=cols[i],type="l",...)
         }
@@ -78,11 +96,16 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoLim=T,stack=F,
           }
         }
         if (stack) {
-          if (autoLim) {
-          plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
+          # Plot lines
+          if (autoX && autoY) {
+            plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),xlim=xlimits,...)
+          } else if (autoY) {
+            plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
+          } else if (autoX) {
+            plot(data[[i]],col=cols[i],type="l",xlim=xlimits,...)
           } else {
-          plot(data[[i]],col=cols[i],type="l",...)
-          } 
+            plot(data[[i]],col=cols[i],type="l",...)
+          }
         }
         x <- c(seq(1,length(data[[i]]),1),seq(length(data[[i]]),1,-1))
         if (!is.null(lowerCI)) {
@@ -117,7 +140,7 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoLim=T,stack=F,
       }
     }
     # Plot lines
-    if (autoLim) {
+    if (autoY) {
       plot(data,col=cols[1],type="l",ylim=c(maxCImin,maxCImax),...)
     } else {
       plot(data,col=cols[1],type="l",...)
