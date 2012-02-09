@@ -57,6 +57,6 @@ plotGeneMotifNucleotideSequence <- function(sequence,motifMatrix,trim=T,displayA
   barplot2(rep(1,nchar(sequence)),space=0,xlim=c(0,nchar(sequence)),ylim=c(0,5),col=colors,plot.grid=F,axes=F,main=names(sequence),names.arg=F)
   par(mar=c(.5,4,1,.5))
   for (i in 1:dim(motifMatrix)[1]) {
-    barplot2(motifMatrix[i,],space=0,xlim=c(0,dim(motifMatrix)[2]),col=colors,plot.grid=T,ylab = rownames(motifMatrix)[i],ylim=c(0,yMax),names.arg=F,cex.axis=cex*.6,cex.lab=cex*.9)
+    barplot2(motifMatrix[i,],space=0,xlim=c(0,dim(motifMatrix)[2]),col=colors,plot.grid=T,ylab = rownames(motifMatrix)[i],ylim=c(0,yMax),names.arg=F,cex.axis=cex*.6,cex.lab=cex*1.2)
   }
 }
