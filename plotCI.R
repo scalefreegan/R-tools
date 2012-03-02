@@ -80,7 +80,7 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
         xlimits <- c(1,max(xlimits))
       } else {
         xlimits <- sapply(data,names)
-        xlimits <- c(min(xlimits),max(xlimits))
+        xlimits <- c(as.numeric(min(xlimits)),as.numeric(max(xlimits)))
       }
     }
     for (i in 1:length(data)) {
