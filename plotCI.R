@@ -30,13 +30,34 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     data=as.numeric(sample.int(100));upperCI=as.numeric(sample.int(100)/10);lowerCI=as.numeric(sample.int(100)/10)
     plotCI(data,upperCI,lowerCI,sort=F,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input")
     plotCI(data,upperCI,lowerCI,sort=T,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input")
+    # vector time series:
+    # noisy sine wave
+    data = sapply(seq(1:100),sin)
+    names(data) = seq(1:100)
+    upperCI = sample(seq(0,1,length.out=1000),100)
+    lowerCI = sample(seq(0,1,length.out=1000),100)
+    plotCI(data,upperCI,lowerCI,sort=F,xlab="x",ylab="sin(x)",main="Vector Input")
     # list: 
     data=lapply(seq(1:3),function(i){sample.int(100)})
     upperCI=lapply(seq(1:3),function(i){sample.int(100)/10})
     lowerCI=lapply(seq(1:3),function(i){sample.int(100)/10})
     plotCI(data,upperCI,lowerCI,sort=T,xlab="Sorted Index",ylab="Value of Random Number",main="List Input")
     # list stacked:
+    data=lapply(seq(1:3),function(i){sample.int(100)})
+    upperCI=lapply(seq(1:3),function(i){sample.int(100)/10})
+    lowerCI=lapply(seq(1:3),function(i){sample.int(100)/10})
     plotCI(data,upperCI,lowerCI,sort=T,stack=T,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input, Stacked")
+    # sine/cosine waves
+    data = list();upperCI = list();lowerCI = list()
+    data[[1]] = sapply(seq(0,99),sin)
+    names(data[[1]]) = seq(0,99)
+    upperCI[[1]] = sample(seq(0,.25,length.out=1000),100)
+    lowerCI[[1]] = sample(seq(0,.25,length.out=1000),100)
+    data[[2]] = sapply(seq(0,99),cos)
+    names(data[[2]]) = seq(0,99)
+    upperCI[[2]] = sample(seq(0,.25,length.out=1000),100)
+    lowerCI[[2]] = sample(seq(0,.25,length.out=1000),100)
+    plotCI(data,upperCI,lowerCI,sort=F,xlab="x",ylab="sin(x)",main="Vector Input")
   }
   cols <- c(brewer.pal(9,"Set3"),brewer.pal(8,"Set3"),brewer.pal(12,"Set3"))
   try(dev.off(),silent=T)
@@ -54,8 +75,13 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
       par(mfrow=c(1,length(data)),mar=c(5,2,5,2))
     }
     if (autoX) {
-      xlimits <- sapply(data,length)
-      xlimits <- c(1,max(xlimits))
+      if (is.null(names(data[[1]]))) {
+        xlimits <- sapply(data,length)
+        xlimits <- c(1,max(xlimits))
+      } else {
+        xlimits <- sapply(data,names)
+        xlimits <- c(min(xlimits),max(xlimits))
+      }
     }
     for (i in 1:length(data)) {
       if (is.null(names(data[[i]]))) {
