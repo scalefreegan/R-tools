@@ -3,7 +3,7 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
   # Author: Aaron Brooks
   # Affiliation: Institute for Systems Biology, Seattle, WA
   # Date of creation: 11/10/2011
-  # Last update: 11/10/2011
+  # Last update: 03/12/2012
   ####################################################################################
   # DESCRIPTION
   ####################################################################################
@@ -11,6 +11,8 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
   # Useful for visualizing trends in groups of data without the
   # noise of many lines
   # DATA is a vector or list of data to be plotted
+  # The names() attribute of each element in DATA specifies 
+  # x coordinates (if applicable)
   # UPPERCI is a vector or list of distances to be plotted 
   # upward from data
   # same goes for LOWERCI, but this is plotted on bottom
@@ -26,6 +28,7 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     # EXAMPLES
     # vector: 
     data=as.numeric(sample.int(100));upperCI=as.numeric(sample.int(100)/10);lowerCI=as.numeric(sample.int(100)/10)
+    plotCI(data,upperCI,lowerCI,sort=F,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input")
     plotCI(data,upperCI,lowerCI,sort=T,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input")
     # list: 
     data=lapply(seq(1:3),function(i){sample.int(100)})
@@ -55,6 +58,10 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
       xlimits <- c(1,max(xlimits))
     }
     for (i in 1:length(data)) {
+      if (is.null(names(data[[i]]))) {
+        # if no x vals are specified, just make into a sequence
+        names(data[[i]]) <- seq(1:length(data[[i]]))
+      }
       if (i == 1) {
         if (sort) {
           data[[i]] <- data[[i]][order(data[[i]])]
@@ -62,19 +69,23 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
           if (!is.null(lowerCI)) {
             lowerCI[[i]] <- lowerCI[[i]][order(data[[i]])]
           }
+          names(data[[i]]) <- seq(1,length(data[[i]]))
         }
+        # Sort data by "time interval"
+        data[[i]] = data[[i]][order(as.numeric(names(data[[i]])))]
         # Plot lines
         if (autoX && autoY) {
-          plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),xlim=xlimits,...)
+          plot(names(data[[i]]),data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),xlim=xlimits,...)
         } else if (autoY) {
-          plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
+          plot(names(data[[i]]),data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
         } else if (autoX) {
-          plot(data[[i]],col=cols[i],type="l",xlim=xlimits,...)
+          plot(names(data[[i]]),data[[i]],col=cols[i],type="l",xlim=xlimits,...)
         } else {
-          plot(data[[i]],col=cols[i],type="l",...)
+          plot(names(data[[i]]),data[[i]],col=cols[i],type="l",...)
         }
         # Plot Polygon
-        x <- c(seq(1,length(data[[i]]),1),seq(length(data[[i]]),1,-1))
+        #x <- c(seq(1,length(data[[i]]),1),seq(length(data[[i]]),1,-1))
+        x <- c(names(data[[i]]),rev(names(data[[i]])))
         if (!is.null(lowerCI)) {
           y1 <- c(data[[i]]+upperCI[[i]],rev(data[[i]]))
           polygon(x=x,y=y1,col=cols[i],lty=2)
@@ -86,7 +97,7 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
           y2 <- c(data[[i]]-upperCI[[i]],rev(data[[i]]))
           polygon(x=x,y=y2,col=cols[i])
         }
-        lines(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
+        lines(names(data[[i]]),data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
       } else {
         if (sort) {
           data[[i]] <- data[[i]][order(data[[i]])]
@@ -94,20 +105,24 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
           if (!is.null(lowerCI)) {
             lowerCI[[i]] <- lowerCI[[i]][order(data[[i]])]
           }
+          names(data[[i]]) <- seq(1,length(data[[i]]))
         }
+        # Sort data by "time interval"
+        data[[i]] = data[[i]][order(as.numeric(names(data[[i]])))]
         if (stack) {
           # Plot lines
           if (autoX && autoY) {
-            plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),xlim=xlimits,...)
+            plot(names(data[[i]]),data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),xlim=xlimits,...)
           } else if (autoY) {
-            plot(data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
+            plot(names(data[[i]]),data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
           } else if (autoX) {
-            plot(data[[i]],col=cols[i],type="l",xlim=xlimits,...)
+            plot(names(data[[i]]),data[[i]],col=cols[i],type="l",xlim=xlimits,...)
           } else {
-            plot(data[[i]],col=cols[i],type="l",...)
+            plot(names(data[[i]]),data[[i]],col=cols[i],type="l",...)
           }
         }
-        x <- c(seq(1,length(data[[i]]),1),seq(length(data[[i]]),1,-1))
+        #x <- c(seq(1,length(data[[i]]),1),seq(length(data[[i]]),1,-1))
+        x <- c(names(data[[i]]),rev(names(data[[i]])))
         if (!is.null(lowerCI)) {
           y1 <- c(data[[i]]+upperCI[[i]],rev(data[[i]]))
           polygon(x=x,y=y1,col=cols[i],lty=2)
@@ -119,10 +134,10 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
           y2 <- c(data[[i]]-upperCI[[i]],rev(data[[i]]))
           polygon(x=x,y=y2,col=cols[i])
         }
-        lines(data[[i]],col=cols[i],...)
+        lines(names(data[[i]]),data[[i]],col=cols[i],...)
       }
     } 
-  } else if (class(data)=="numeric") {
+  } else if (class(data)=="numeric" || class(data)=="integer") {
     minD <- min(data)
     maxD <- max(data)
     if (!is.null(lowerCI)) {
@@ -132,21 +147,29 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     }
     maxCImin <- minD-maxCI
     maxCImax <- maxD+maxCI
+    if (is.null(names(data))) {
+        # if no x vals are specified, just make into a sequence
+        names(data) <- seq(1:length(data))
+    }
     if (sort) {
       data <- data[order(data)]
       upperCI <- upperCI[order(data)]
       if (!is.null(lowerCI)) {
         lowerCI <- lowerCI[order(data)]
       }
+      names(data) <- seq(1,length(data))
     }
+    # Sort data by "time interval"
+    data = data[order(as.numeric(names(data)))]
     # Plot lines
     if (autoY) {
-      plot(data,col=cols[1],type="l",ylim=c(maxCImin,maxCImax),...)
+      plot(names(data),data,col=cols[1],type="l",ylim=c(maxCImin,maxCImax),...)
     } else {
-      plot(data,col=cols[1],type="l",...)
+      plot(names(data),data,col=cols[1],type="l",...)
     }
     # Plot Polygon
-    x <- c(seq(1,length(data),1),seq(length(data),1,-1))
+    #x <- c(seq(1,length(data),1),seq(length(data),1,-1))
+    x <- c(names(data),rev(names(data)))
     if (!is.null(lowerCI)) {
       y1 <- c(data+upperCI,rev(data))
       polygon(x=x,y=y1,col=cols[1],lty=2)
@@ -158,6 +181,6 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
       y2 <- c(data-upperCI,rev(data))
       polygon(x=x,y=y2,col=cols[1])
     }
-    lines(data,col=cols[1],type="l",ylim=c(maxCImin,maxCImax),...)
+    lines(names(data),data,col=cols[1],type="l",ylim=c(maxCImin,maxCImax),...)
   }
 }
