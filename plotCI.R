@@ -28,15 +28,15 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     # EXAMPLES
     # vector: 
     data=as.numeric(sample.int(100));upperCI=as.numeric(sample.int(100)/10);lowerCI=as.numeric(sample.int(100)/10)
-    plotCI(data,upperCI,lowerCI,sort=F,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input")
-    plotCI(data,upperCI,lowerCI,sort=T,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input")
+    plotCI(data,upperCI,lowerCI,sort=F,xlab="Sorted Index",ylab="Value of Random Number",main="Random Vector Input, Unsorted")
+    plotCI(data,upperCI,lowerCI,sort=T,xlab="Sorted Index",ylab="Value of Random Number",main="Random Vector Input, Sorted")
     # vector time series:
     # noisy sine wave
     data = sapply(seq(1:100),sin)
     names(data) = seq(1:100)
     upperCI = sample(seq(0,1,length.out=1000),100)
     lowerCI = sample(seq(0,1,length.out=1000),100)
-    plotCI(data,upperCI,lowerCI,sort=F,xlab="x",ylab="sin(x)",main="Vector Input")
+    plotCI(data,upperCI,lowerCI,sort=F,xlab="x",ylab="sin(x)",main="Time Series Data")
     # list: 
     data=lapply(seq(1:3),function(i){sample.int(100)})
     upperCI=lapply(seq(1:3),function(i){sample.int(100)/10})
@@ -46,18 +46,19 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     data=lapply(seq(1:3),function(i){sample.int(100)})
     upperCI=lapply(seq(1:3),function(i){sample.int(100)/10})
     lowerCI=lapply(seq(1:3),function(i){sample.int(100)/10})
-    plotCI(data,upperCI,lowerCI,sort=T,stack=T,xlab="Sorted Index",ylab="Value of Random Number",main="Vector Input, Stacked")
+    plotCI(data,upperCI,lowerCI,sort=T,stack=T,xlab="Sorted Index",ylab="Value of Random Number:side-by-side",main="Vector Input, Stacked")
     # sine/cosine waves
     data = list();upperCI = list();lowerCI = list()
     data[[1]] = sapply(seq(0,99),sin)
     names(data[[1]]) = seq(0,99)
-    upperCI[[1]] = sample(seq(0,.25,length.out=1000),100)
-    lowerCI[[1]] = sample(seq(0,.25,length.out=1000),100)
+    upperCI[[1]] = sample(seq(0,1,length.out=1000),100)
+    lowerCI[[1]] = sample(seq(0,1,length.out=1000),100)
     data[[2]] = sapply(seq(0,99),cos)
     names(data[[2]]) = seq(0,99)
-    upperCI[[2]] = sample(seq(0,.25,length.out=1000),100)
-    lowerCI[[2]] = sample(seq(0,.25,length.out=1000),100)
-    plotCI(data,upperCI,lowerCI,sort=F,xlab="x",ylab="sin(x)",main="Vector Input")
+    upperCI[[2]] = sample(seq(0,1,length.out=1000),100)
+    lowerCI[[2]] = sample(seq(0,1,length.out=1000),100)
+    plotCI(data,upperCI,lowerCI,sort=F,xlab="x",ylab="sin(x)",main="Multiple Time Series")
+    plotCI(data,upperCI,lowerCI,sort=F,stack=T,xlab="x",ylab="sin(x)",main="Multiple Time Series: side-by-side")
   }
   cols <- c(brewer.pal(9,"Set3"),brewer.pal(8,"Set3"),brewer.pal(12,"Set3"))
   try(dev.off(),silent=T)
