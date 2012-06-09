@@ -61,7 +61,7 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     plotCI(data,upperCI,lowerCI,sort=F,stack=T,xlab="x",ylab="sin(x)",main="Multiple Time Series: side-by-side")
   }
   o <- c()
-  cols <- c(brewer.pal(9,"Set3"),brewer.pal(8,"Set3"),brewer.pal(12,"Set3"))
+  if (is.null(cols)) cols <- c(brewer.pal(9,"Set3"),brewer.pal(8,"Set3"),brewer.pal(12,"Set3"))
   #try(dev.off(),silent=T)
   if (class(data) == "list") {
     minD <- min(unlist(sapply(data,min)))
