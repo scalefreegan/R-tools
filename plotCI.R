@@ -124,14 +124,14 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
         x <- c(names(data[[i]]),rev(names(data[[i]])))
         if (!is.null(lowerCI)) {
           y1 <- c(data[[i]]+upperCI[[i]],rev(data[[i]]))
-          polygon(x=x,y=y1,col=cols[i],lty=2)
+          polygon(x=x,y=y1,col=cols[i],lty=0)
           y2 <- c(data[[i]]-lowerCI[[i]],rev(data[[i]]))
-          polygon(x=x,y=y2,col=cols[i])
+          polygon(x=x,y=y2,col=cols[i],lty=0)
         } else {
           y1 <- c(data[[i]]+upperCI[[i]],rev(data[[i]]))
-          polygon(x=x,y=y1,col=cols[i])
+          polygon(x=x,y=y1,col=cols[i],lty=0)
           y2 <- c(data[[i]]-upperCI[[i]],rev(data[[i]]))
-          polygon(x=x,y=y2,col=cols[i])
+          polygon(x=x,y=y2,col=cols[i],lty=0)
         }
         lines(names(data[[i]]),data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
       } else {
