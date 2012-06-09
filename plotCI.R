@@ -60,8 +60,9 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     plotCI(data,upperCI,lowerCI,sort=F,xlab="x",ylab="sin(x)",main="Multiple Time Series")
     plotCI(data,upperCI,lowerCI,sort=F,stack=T,xlab="x",ylab="sin(x)",main="Multiple Time Series: side-by-side")
   }
+  o <- c()
   cols <- c(brewer.pal(9,"Set3"),brewer.pal(8,"Set3"),brewer.pal(12,"Set3"))
-  try(dev.off(),silent=T)
+  #try(dev.off(),silent=T)
   if (class(data) == "list") {
     minD <- min(unlist(sapply(data,min)))
     maxD <- max(unlist(sapply(data,max)))
@@ -79,6 +80,9 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
       if (is.null(names(data[[1]]))) {
         xlimits <- sapply(data,length)
         xlimits <- c(1,max(xlimits))
+      } else if (length(grep("[A-Za-z]",names(data[[1]])))>0){
+        xlimits <- sapply(data,length)
+        xlimits <- c(1,max(xlimits))
       } else {
         xlimits <- as.numeric(sapply(data,names))
         xlimits <- c(as.numeric(min(xlimits)),as.numeric(max(xlimits)))
@@ -88,9 +92,12 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
       if (is.null(names(data[[i]]))) {
         # if no x vals are specified, just make into a sequence
         names(data[[i]]) <- seq(1:length(data[[i]]))
+      } else if (length(grep("[A-Za-z]",names(data[[i]])))>0){
+        names(data[[i]]) <- seq(1:length(data[[i]]))
       }
       if (i == 1) {
         if (sort) {
+          o <- order(data[[i]])
           data[[i]] <- data[[i]][order(data[[i]])]
           upperCI[[i]] <- upperCI[[i]][order(data[[i]])]
           if (!is.null(lowerCI)) {
@@ -98,8 +105,10 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
           }
           names(data[[i]]) <- seq(1,length(data[[i]]))
         }
-        # Sort data by "time interval"
-        data[[i]] = data[[i]][order(as.numeric(names(data[[i]])))]
+        if (!is.null(NULL)) {
+          # Sort data by "time interval"
+          data[[i]] = data[[i]][order(as.numeric(names(data[[i]])))]
+        }
         # Plot lines
         if (autoX && autoY) {
           plot(names(data[[i]]),data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),xlim=xlimits,...)
@@ -126,16 +135,18 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
         }
         lines(names(data[[i]]),data[[i]],col=cols[i],type="l",ylim=c(maxCImin,maxCImax),...)
       } else {
-        if (sort) {
-          data[[i]] <- data[[i]][order(data[[i]])]
-          upperCI[[i]] <- upperCI[[i]][order(data[[i]])]
+        if (sort) { 
+          data[[i]] <- data[[i]][o]
+          upperCI[[i]] <- upperCI[[i]][o]
           if (!is.null(lowerCI)) {
-            lowerCI[[i]] <- lowerCI[[i]][order(data[[i]])]
+            lowerCI[[i]] <- lowerCI[[i]][o]
           }
           names(data[[i]]) <- seq(1,length(data[[i]]))
         }
-        # Sort data by "time interval"
-        data[[i]] = data[[i]][order(as.numeric(names(data[[i]])))]
+        if (!is.null(NULL)) {
+          # Sort data by "time interval"
+          data[[i]] = data[[i]][order(as.numeric(names(data[[i]])))]
+        }
         if (stack) {
           # Plot lines
           if (autoX && autoY) {
@@ -177,8 +188,11 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     if (is.null(names(data))) {
         # if no x vals are specified, just make into a sequence
         names(data) <- seq(1:length(data))
+    } else if (length(grep("[A-Za-z]",names(data)))>0){
+      names(data) <- seq(1:length(data))
     }
     if (sort) {
+      o <- order(data)
       data <- data[order(data)]
       upperCI <- upperCI[order(data)]
       if (!is.null(lowerCI)) {
@@ -186,8 +200,10 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
       }
       names(data) <- seq(1,length(data))
     }
-    # Sort data by "time interval"
-    data = data[order(as.numeric(names(data)))]
+    if (!is.null(NULL)) {
+      # Sort data by "time interval"
+      data[[i]] = data[[i]][order(as.numeric(names(data[[i]])))]
+    }
     # Plot lines
     if (autoY) {
       plot(names(data),data,col=cols[1],type="l",ylim=c(maxCImin,maxCImax),...)
@@ -210,4 +226,5 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
     }
     lines(names(data),data,col=cols[1],type="l",ylim=c(maxCImin,maxCImax),...)
   }
+  return(o)
 }
