@@ -67,7 +67,7 @@ load_topgo_map <- function(file) {
   return(gene2go)
 }
 
-get.topGO.object <- function(genes,gene2go,ontology=c("BP","MF","CC")[1]) {
+get_topGO_object <- function(genes,gene2go,ontology=c("BP","MF","CC")[1]) {
   require(topGO)
   # genes is a vector containing genes of interest
   geneList <- factor(as.integer(names(gene2go)%in%genes))
