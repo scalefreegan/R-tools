@@ -43,10 +43,6 @@ load_go_microbes_online <- function(taxon.id = e$taxon.id,rsat.species=e$rsat.sp
   if (file.exists(fname)) 
     cat("Succesfully fetched GO annotations. Parsing...\n")
   f <- read.delim(fname)
-  if (rsat.species == "Halobacterium_sp") {
-    # if halo, clean up sysNames, remove m
-    f <- t(apply(f,1,function(i){i["sysName"] <- sub("m","",i["sysName"]);return(i)}))
-  }
   # try to match appropriate names
   # use accession to pull out names that overlap with ratios matrix
   # remove entries without accession
