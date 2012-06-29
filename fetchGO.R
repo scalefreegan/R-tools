@@ -19,7 +19,7 @@ load_go_microbes_online <- function(taxon.id = e$taxon.id,rsat.species=e$rsat.sp
                                     IdOverride=NULL) {
   require(topGO)
   # Currently requires an active egrin env for the species of interest
-  cat("Using operon predictions from MicrobesOnline...\n")
+  cat("Using GO annotations from MicrobesOnline...\n")
   cat("Storing results in ./data/...\n")
   try(dir.create("./data"))
   if (!is.null(IdOverride)) {
@@ -41,7 +41,7 @@ load_go_microbes_online <- function(taxon.id = e$taxon.id,rsat.species=e$rsat.sp
     }
   }
   if (file.exists(fname)) 
-    cat("Succesfully fetched operon predictions. Parsing...\n")
+    cat("Succesfully fetched GO annotations. Parsing...\n")
   f <- read.delim(fname)
   if (rsat.species == "Halobacterium_sp") {
     # if halo, clean up sysNames, remove m
@@ -69,8 +69,12 @@ load_topgo_map <- function(file) {
 
 get.topGO.object <- function(genes,gene2go,ontology=c("BP","MF","CC")[1]) {
   require(topGO)
+  # genes is a vector containing genes of interest
   geneList <- factor(as.integer(names(gene2go)%in%genes))
   names(geneList) <- names(gene2go)
   GOdata <- new("topGOdata", ontology = ontology, allGenes = geneList, annot = annFUN.gene2GO, gene2GO = gene2go)
+  #GOdata can be used directly for analysis, e.g. 
+  # test <- runTest(GOdata,algorithm="classic",statistic="fisher")
+  # results <- GenTable(GOdata,test,topNodes=10)
   return(GOdata)
 }
