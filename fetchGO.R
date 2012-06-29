@@ -47,8 +47,8 @@ load_go_microbes_online <- function(taxon.id = e$taxon.id,rsat.species=e$rsat.sp
   # use accession to pull out names that overlap with ratios matrix
   # remove entries without accession
   f <- f[which(sapply(f[,"accession"],nchar)>0),]
-  syns <- mclapply(f[,"accession"],function(i){e$get.synonyms(i)})
-  syns.trans <- lapply(seq(1,length(syns)),function(i){syns[[i]][syns[[i]]%in%rownames(ratios)]})
+  syns <- e$get.synonyms(f[,"accession"])
+  syns.trans <- lapply(seq(1,length(syns)),function(i){syns[[i]][syns[[i]]%in%rownames(e$ratios[[1]])]})
   ind <- which(sapply(syns.trans,length)>0)
   fname.map <- paste("data/", rsat.species, "/microbesonline_geneontology_", 
                  org.id, ".map", sep = "")
