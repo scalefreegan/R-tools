@@ -48,15 +48,15 @@ load_go_microbes_online <- function(taxon.id = e$taxon.id,rsat.species=e$rsat.sp
     f <- t(apply(f,1,function(i){i["sysName"] <- sub("m","",i["sysName"]);return(i)}))
   }
   # try to match appropriate names
-  # possibilities: locusId, accession, GI, sysName, name
-  score <- c(sum(f[,"locusId"]%in%rownames(e$ratios[[1]])),sum(f[,"accession"]%in%rownames(e$ratios[[1]])),
-             sum(f[,"GI"]%in%rownames(e$ratios[[1]])),sum(f[,"sysName"]%in%rownames(e$ratios[[1]])),
-             sum(f[,"name"]%in%rownames(e$ratios[[1]])))
-  names(score) <- c("locusId", "accession", "GI", "sysName", "name")
-  colID <- names(score)[which(score==max(score))]
+  # use accession to pull out names that overlap with ratios matrix
+  # remove entries without accession
+  f <- f[which(sapply(f[,"accession"],nchar)>0),]
+  syns <- mclapply(f[,"accession"],function(i){e$get.synonyms(i)})
+  syns.trans <- lapply(seq(1,length(syns)),function(i){syns[[i]][syns[[i]]%in%rownames(ratios)]})
+  ind <- which(sapply(syns.trans,length)>0)
   fname.map <- paste("data/", rsat.species, "/microbesonline_geneontology_", 
                  org.id, ".map", sep = "")
-  write.table(f[,c(colID,"GO")],fname.map,sep="\t",quote=F,row.names=F,col.names=F)
+  write.table(cbind(unlist(syns.trans[ind]),f[ind,"GO"]),fname.map,sep="\t",quote=F,row.names=F,col.names=F)
   gene2go <- readMappings(fname.map)
   return(gene2go)
 }
