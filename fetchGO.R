@@ -1,7 +1,7 @@
 dlf <- function (f, url, msg = NULL, mode = "wb", quiet = F, ...) 
 {
   err <- 0
-  if (mode == "ab" || !file.exists(f) || file.info(f)$size == 
+  if (mode == "wb" || !file.exists(f) || file.info(f)$size == 
     118) {
     if (!file.exists(dirname(f))) 
       try(dir.create(dirname(f), recursive = T))
@@ -15,29 +15,28 @@ dlf <- function (f, url, msg = NULL, mode = "wb", quiet = F, ...)
 }
 
 
-load_go_microbes_online <- function(taxon.id = e$taxon.id,rsat.species=e$rsat.species,org.id=e$genome.info$org.id$V1[1],
-                                    IdOverride=NULL) {
+load_go_microbes_online <- function(IdOverride=NULL) {
   require(topGO)
   # Currently requires an active egrin env for the species of interest
   cat("Using GO annotations from MicrobesOnline...\n")
   cat("Storing results in ./data/...\n")
   try(dir.create("./data"))
   if (!is.null(IdOverride)) {
-    fname <- paste("data/", rsat.species, "/microbesonline_geneontology_", 
+    fname <- paste("data/", e$rsat.species, "/microbesonline_geneontology_", 
                    IdOverride, ".named", sep = "")
     err <- dlf(fname, paste("http://www.microbesonline.org/cgi-bin/genomeInfo.cgi?tId=", 
-                            IdOverride, ";export=tab", sep = ""),mode="ab")
+                            IdOverride, ";export=tab", sep = ""),mode="wb")
   } else {
-    fname <- paste("data/", rsat.species, "/microbesonline_geneontology_", 
-                   taxon.id, ".named", sep = "")
+    fname <- paste("data/", e$rsat.species, "/microbesonline_geneontology_", 
+                   e$taxon.id, ".named", sep = "")
     err <- dlf(fname, paste("http://www.microbesonline.org/cgi-bin/genomeInfo.cgi?tId=", 
-                            taxon.id, ";export=tab", sep = ""),,mode="ab")
-    if (org.id != taxon.id && (!file.exists(fname) || file.info(fname)$size == 
+                            e$taxon.id, ";export=tab", sep = ""),,mode="wb")
+    if (e$genome.info$org.id$V1[1] != e$taxon.id && (!file.exists(fname) || file.info(fname)$size == 
       118)) {
-      fname <- paste("data/", rsat.species, "/microbesonline_geneontology_", 
-                     org.id, ".named", sep = "")
+      fname <- paste("data/", e$rsat.species, "/microbesonline_geneontology_", 
+                     e$genome.info$org.id$V1[1], ".named", sep = "")
       err <- dlf(fname, paste("http://www.microbesonline.org/cgi-bin/genomeInfo.cgi?oId=", 
-                              org.id, ";export=tab", sep = ""),mode="ab")
+                              e$genome.info$org.id$V1[1], ";export=tab", sep = ""),mode="wb")
     }
   }
   if (file.exists(fname)) 
@@ -46,13 +45,13 @@ load_go_microbes_online <- function(taxon.id = e$taxon.id,rsat.species=e$rsat.sp
   # try to match appropriate names
   # use accession to pull out names that overlap with ratios matrix
   # remove entries without accession
-  f <- f[which(sapply(f[,"accession"],nchar)>0),]
+  f <- f[which(sapply(f[,"accession"],nchar)>1),]
   syns <- e$get.synonyms(f[,"accession"])
   syns.trans <- lapply(seq(1,length(syns)),function(i){syns[[i]][syns[[i]]%in%rownames(e$ratios[[1]])]})
   ind <- which(sapply(syns.trans,length)>0)
-  fname.map <- paste("data/", rsat.species, "/microbesonline_geneontology_", 
-                 org.id, ".map", sep = "")
-  write.table(cbind(unlist(syns.trans[ind]),f[ind,"GO"]),fname.map,sep="\t",quote=F,row.names=F,col.names=F)
+  fname.map <- paste("data/", e$rsat.species, "/microbesonline_geneontology_", 
+                 e$genome.info$org.id$V1[1], ".map", sep = "")
+  write.table(data.frame(unlist(syns.trans[ind]),f[ind,"GO"]),fname.map,sep="\t",quote=F,row.names=F,col.names=F)
   gene2go <- readMappings(fname.map)
   return(gene2go)
 }
