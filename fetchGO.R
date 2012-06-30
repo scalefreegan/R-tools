@@ -47,7 +47,7 @@ load_go_microbes_online <- function(IdOverride=NULL) {
   # remove entries without accession
   f <- f[which(sapply(f[,"accession"],nchar)>1),]
   syns <- e$get.synonyms(f[,"accession"])
-  syns.trans <- lapply(seq(1,length(syns)),function(i){syns[[i]][syns[[i]]%in%rownames(e$ratios[[1]])]})
+  syns.trans <- lapply(seq(1,length(syns)),function(i){syns[[i]][syns[[i]]%in%rownames(e$ratios[[1]])][1]})
   ind <- which(sapply(syns.trans,length)>0)
   fname.map <- paste("data/", e$rsat.species, "/microbesonline_geneontology_", 
                  e$genome.info$org.id$V1[1], ".map", sep = "")
