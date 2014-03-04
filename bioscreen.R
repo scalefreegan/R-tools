@@ -1,4 +1,14 @@
+####################################################################################
+# Author: Aaron Brooks
+# Affiliation: Institute for Systems Biology, Seattle, WA
+# Date of creation: 03/03/2014
+# Last update: 03/03/2014
+####################################################################################
+# DESCRIPTION
+####################################################################################
 # functions for parsing bioscreen data
+#################################################################################### 
+
 loadBioscreen <- function(file,sep=",",time_format = c("min","hours")[1],exclude){
 	data = read.delim(file,sep,header=T)
 	# parse time to minutes
