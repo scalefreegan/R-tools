@@ -1,4 +1,4 @@
-plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,stack=F,...) {
+plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,stack=F,legend=T,position="bottomright",...) {
   ####################################################################################
   # Author: Aaron Brooks
   # Affiliation: Institute for Systems Biology, Seattle, WA
@@ -173,6 +173,10 @@ plotCI <- function(data,upperCI,lowerCI=NULL,cols=NULL,sort=F,autoY=T,autoX=T,st
           polygon(x=x,y=y2,col=cols[i],lty=0)
         }
         lines(names(data[[i]]),data[[i]],col=cols[i],...)
+      }
+      # Plot legend
+      if (legend) {
+        legend(position,legend=names(data),fill=cols)
       }
     } 
   } else if (class(data)=="numeric" || class(data)=="integer") {
