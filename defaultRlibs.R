@@ -1,6 +1,5 @@
-.libPaths("~/R/x86_64-redhat-linux-gnu-library/3.2/")
-
 library(ggplot2)
+library(plyr)
 library(dplyr)
 library(reshape2)
 library(parallel)
